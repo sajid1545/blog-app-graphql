@@ -3,3 +3,4 @@ yarn.lock
 .env
 yarn-error.log
 yarnrc
+prisma/migrations
