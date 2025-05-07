@@ -1,10 +1,50 @@
 export const typeDefs = `#graphql
-  type Book {
-    title: String
-    author: String
-  }
 
-  type Query {
-    books: [Book]
-  }
+    type Query {
+        me: User
+        posts: [Post]
+        users: [User]
+        profile(userId: ID!): Profile
+    }
+
+    type Mutation {
+        signup(name: String!, email: String!, password: String!, bio: String): AuthPayload!
+        signin(email: String!, password: String!): AuthPayload!
+    }
+
+    type AuthPayload {
+        userError:String   
+        token: String
+    }
+
+    type PostPayload {
+        userError:String   
+        post: Post
+    }
+
+    type Post {
+        id: ID!
+        title: String!
+        content: String!
+        author: User!
+        createdAt: String!
+        published: Boolean!
+    }
+
+    type User {
+        id: ID!
+        name: String!
+        email: String!
+        createdAt: String!
+        posts: [Post]!
+    }
+
+    type Profile {
+        id: ID!
+        bio: String!
+        user: User!
+        createdAt: String!
+        updatedAt: String!
+    }
+
 `;
