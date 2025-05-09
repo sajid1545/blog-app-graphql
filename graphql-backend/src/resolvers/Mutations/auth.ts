@@ -45,4 +45,41 @@ export const authResolvers = {
       token,
     };
   },
+
+  signin: async (parent: any, args: any, { prisma }: any) => {
+    const isUserExists = await prisma.user.findUnique({
+      where: {
+        email: args.email,
+      },
+    });
+
+    if (!isUserExists) {
+      return {
+        userError: "User not found",
+        token: null,
+      };
+    }
+
+    const isPasswordMatched = await bcrypt.compare(
+      args.password,
+      isUserExists.password
+    );
+
+    if (!isPasswordMatched) {
+      return {
+        userError: "Invalid Password",
+        token: null,
+      };
+    }
+
+    const token = await jwtHelper.generateToken(
+      { userId: isUserExists.id },
+      config.jwt.secret as string
+    );
+
+    return {
+      userError: null,
+      token,
+    };
+  },
 };
