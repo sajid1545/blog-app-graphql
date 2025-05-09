@@ -67,7 +67,7 @@ const Signin = () => {
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="font-semibold text-white hover:text-gray-300"
+              className="font-semibold text-white hover:text-gray-300 transition-all duration-300 cursor-pointer"
             >
               Sign up
             </Link>
