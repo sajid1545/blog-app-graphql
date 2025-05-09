@@ -7,8 +7,14 @@ const generateToken = async (payload: { userId: number }, secret: Secret) => {
 };
 
 const getUserInfoFromToken = async (token: string) => {
-  const decodedToken = jwt.verify(token, config.jwt.secret as string);
-  return decodedToken;
+  try {
+    const decoded = jwt.verify(token, config.jwt.secret as string) as {
+      userId: number;
+    };
+    return decoded;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const jwtHelper = {
