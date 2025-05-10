@@ -5,6 +5,7 @@ const GET_Posts = gql`
   query GetPosts {
     posts {
       title
+      createdAt
       author {
         name
         id
@@ -15,7 +16,7 @@ const GET_Posts = gql`
 
 const Posts = () => {
   const { loading, error, data } = useQuery(GET_Posts);
-  console.log(data);
+  console.log("🚀 ~ Posts ~ data:", data);
 
   return (
     <div className="relative flex flex-col items-center h-screen bg-black text-white text-xl px-6 py-10">
