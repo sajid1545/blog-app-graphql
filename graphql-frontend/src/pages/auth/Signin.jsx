@@ -1,78 +1,92 @@
-import React from "react";
-import { Link } from "react-router";
+import { gql, useMutation } from "@apollo/client";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router";
+
+const SIGNIN_USER = gql`
+  mutation Signin($email: String!, $password: String!) {
+    signin(email: $email, password: $password) {
+      token
+    }
+  }
+`;
 
 const Signin = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const [loginUser, { data, loading, error }] = useMutation(SIGNIN_USER);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      await loginUser({
+        variables: { email, password },
+      });
+    } catch (err) {
+      console.error("Login error:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (data?.signin?.token) {
+      localStorage.setItem("token", data.signin.token);
+      navigate("/");
+    }
+  }, [data, navigate]);
+
   return (
-    <div className="flex justify-center items-center h-screen bg-black text-white">
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">
+    <div className="flex justify-center items-center h-screen bg-black text-white px-4">
+      <div className="w-full max-w-md space-y-8">
+        <Link to="/">
+          <h2 className="text-center text-3xl font-bold">
             Sign in to your account
           </h2>
-        </div>
+        </Link>
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm/6 font-medium text-white"
-              >
-                Email address
-              </label>
-              <div className="mt-2">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-white sm:text-sm/6"
-                />
-              </div>
-            </div>
+        <form onSubmit={handleLogin} className="space-y-5">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-2 w-full rounded-md bg-white/5 px-3 py-2 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+          </div>
 
-            <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm/6 font-medium text-white"
-                >
-                  Password
-                </label>
-              </div>
-              <div className="mt-2">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  autoComplete="current-password"
-                  className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-white sm:text-sm/6"
-                />
-              </div>
-            </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-2 w-full rounded-md bg-white/5 px-3 py-2 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+          </div>
 
-            <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-white/10 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-300 cursor-pointer"
-              >
-                Sign in
-              </button>
-            </div>
-          </form>
+          {loading && <p className="text-sm text-yellow-400">Logging in...</p>}
+          {error && (
+            <p className="text-sm text-red-500">Error: {error.message}</p>
+          )}
 
-          <p className="mt-10 text-center text-sm/6 text-gray-400">
-            Don't have an account?{" "}
-            <Link
-              to="/signup"
-              className="font-semibold text-white hover:text-gray-300 transition-all duration-300 cursor-pointer"
-            >
-              Sign up
-            </Link>
-          </p>
-        </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex justify-center rounded-md bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-500 transition disabled:opacity-50"
+          >
+            Sign in
+          </button>
+        </form>
       </div>
     </div>
   );
