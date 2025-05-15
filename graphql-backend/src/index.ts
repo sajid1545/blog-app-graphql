@@ -8,11 +8,14 @@ import { jwtHelper } from "./utils/jwtHelper";
 
 export const prisma = new PrismaClient();
 
+interface UserInfo {
+  userId: number | null;
+  role: string; // or use Role enum if available
+}
+
 interface Context {
   prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
-  userInfo: {
-    userId: number | null;
-  } | null;
+  userInfo: UserInfo | null;
 }
 
 const main = async () => {

@@ -16,6 +16,8 @@ const GET_Posts = gql`
 
 const Posts = () => {
   const { loading, error, data } = useQuery(GET_Posts);
+  console.log(error);
+
   console.log("🚀 ~ Posts ~ data:", data);
 
   return (

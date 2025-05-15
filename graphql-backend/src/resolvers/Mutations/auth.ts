@@ -24,6 +24,7 @@ export const authResolvers = {
         name: args.name,
         email: args.email,
         password: hashedPassword,
+        role: args.role || "USER",
       },
     });
 
@@ -43,6 +44,7 @@ export const authResolvers = {
     return {
       userError: null,
       token,
+      user: newUser,
     };
   },
 
@@ -57,6 +59,7 @@ export const authResolvers = {
       return {
         userError: "User not found",
         token: null,
+        user: null,
       };
     }
 
@@ -69,6 +72,7 @@ export const authResolvers = {
       return {
         userError: "Invalid Password",
         token: null,
+        user: null,
       };
     }
 
@@ -80,6 +84,7 @@ export const authResolvers = {
     return {
       userError: null,
       token,
+      user: isUserExists,
     };
   },
 };

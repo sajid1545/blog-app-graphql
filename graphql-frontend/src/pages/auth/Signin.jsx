@@ -1,11 +1,18 @@
+/* eslint-disable no-unused-vars */
 import { gql, useMutation } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { useAuth } from "../../context/AuthContext";
 
 const SIGNIN_USER = gql`
   mutation Signin($email: String!, $password: String!) {
     signin(email: $email, password: $password) {
       token
+      user {
+        id
+        email
+        role
+      }
     }
   }
 `;
@@ -14,6 +21,7 @@ const Signin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth(); // From AuthContext
 
   const [loginUser, { data, loading, error }] = useMutation(SIGNIN_USER);
 
@@ -21,20 +29,26 @@ const Signin = () => {
     e.preventDefault();
 
     try {
-      await loginUser({
+      const result = await loginUser({
         variables: { email, password },
       });
+      console.log(result);
+
+      const { token, user } = result.data.signin;
+
+      // Update auth context and store data
+      login({ token, user });
+
+      // Redirect based on role
+      if (user.role === "ADMIN") {
+        navigate("/posts");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       console.error("Login error:", err);
     }
   };
-
-  useEffect(() => {
-    if (data?.signin?.token) {
-      localStorage.setItem("token", data.signin.token);
-      navigate("/");
-    }
-  }, [data, navigate]);
 
   return (
     <div className="flex justify-center items-center h-screen bg-black text-white px-4">
