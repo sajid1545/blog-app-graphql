@@ -1,5 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import { Link } from "react-router";
+import { useAuth } from "../../context/AuthContext";
 
 const GET_Posts = gql`
   query GetPosts {
@@ -16,9 +17,24 @@ const GET_Posts = gql`
 
 const Posts = () => {
   const { loading, error, data } = useQuery(GET_Posts);
-  console.log(error);
 
-  console.log("🚀 ~ Posts ~ data:", data);
+  const { isAdmin } = useAuth();
+
+  if (!isAdmin) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-black text-white">
+        <p>You are not authorized to view this page.</p>
+
+        {/* Go Back Button */}
+        <Link
+          to="/"
+          className="absolute top-6 left-6 text-sm border border-cyan-500 text-cyan-500 px-4 py-1 rounded-md hover:bg-cyan-500 hover:text-black transition duration-300"
+        >
+          ← Back to Home
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex flex-col items-center h-screen bg-black text-white text-xl px-6 py-10">
