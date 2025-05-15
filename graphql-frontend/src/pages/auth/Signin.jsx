@@ -32,7 +32,6 @@ const Signin = () => {
       const result = await loginUser({
         variables: { email, password },
       });
-      console.log(result);
 
       const { token, user } = result.data.signin;
 
